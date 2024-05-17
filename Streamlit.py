@@ -19,6 +19,15 @@ df = pd.read_csv(
     "Ordered_NLP_preprocessed_df.csv"
 )  # Remplacez par le chemin réel de votre fichier
 
+# Renommer les colonne pour être plus parlant
+nouveaux_noms = {
+    "Processed_nom_festival": "Nom_festival",
+    "Processed_Type": "Type",
+    "Processed_Region": "Region",
+    "Processed_Ville": "Ville",
+}
+df.rename(columns=nouveaux_noms, inplace=True)
+
 
 # Définir les fonctions de prétraitement
 def tok(sentence):
@@ -65,10 +74,10 @@ def clean_value(value):
 
 # Colonnes à utiliser pour créer la colonne 'Soop'
 colonnes_utilisees = [
-    "Processed_nom_festival",
-    "Processed_Type",
-    "Processed_Region",
-    "Processed_Ville",
+    "Nom_festival",
+    "Type",
+    "Region",
+    "Ville",
     "Procced_musique",
     "Processed_Spectacle_vivant",
     "Processed_Cinema_audiovisuel",
@@ -119,10 +128,10 @@ def find_closest_entries(query, vectorizer, knn_model, df, n_neighbors=5):
     similar_entries = df.loc[
         indices[0],
         [
-            "Processed_nom_festival",
-            "Processed_Type",
-            "Processed_Region",
-            "Processed_Ville",
+            "Nom_festival",
+            "Type",
+            "Region",
+            "Ville",
             "Annee",
             "Geocode",
             "Site_internet",
@@ -143,8 +152,8 @@ def create_map(similar_entries):
         ):  # Vérifiez que vous avez exactement deux parties après split
             lat = float(geocode[0].strip())
             lon = float(geocode[1].strip())
-            nom_festival = row["Processed_nom_festival"]
-            folium.Marker(location=[lat, lon], popup=nom_festival).add_to(carte)
+            nom_festival = row["Nom_festival"]
+            folium.Marker(location=[lat, lon], tooltip=nom_festival).add_to(carte)
 
     return carte
 
@@ -175,7 +184,7 @@ if query:
         "Cliquez sur le lien ci-dessous pour visiter le site de l'organisation festival :"
     )
     for index, row in closest_entries.iterrows():
-        nom_festival = row["Processed_nom_festival"]
+        nom_festival = row["Nom_festival"]
         site = row["Site_internet"]
         if pd.notna(site):
             # Ajouter 'http://' si l'URL ne commence pas par 'http' ou 'https'
