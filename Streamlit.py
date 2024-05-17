@@ -103,9 +103,7 @@ modelNN_t.fit(X_tfidf)
 
 
 # Définir la fonction pour trouver les entrées les plus proches
-def find_closest_entries(
-    query, vectorizer, knn_model, df, max_neighbors=10, distance_threshold=0.3
-):
+def find_closest_entries(query, vectorizer, knn_model, df, n_neighbors=5):
     # Prétraiter la requête
     query_cleaned = preprocess(query, stemm=True, lemm=False)
 
@@ -113,13 +111,10 @@ def find_closest_entries(
     query_tfidf = vectorizer.transform([query_cleaned]).toarray()
 
     # Trouver les entrées les plus proches
-    distances, indices = knn_model.kneighbors(query_tfidf, n_neighbors=max_neighbors)
-
-    # Filtrer les entrées selon le seuil de distance
-    valid_indices = indices[0][distances[0] <= distance_threshold]
+    distances, indices = knn_model.kneighbors(query_tfidf, n_neighbors=n_neighbors)
 
     # Extraire les entrées similaires
-    similar_entries = df.iloc[valid_indices]
+    similar_entries = df.iloc[indices[0]]
     return similar_entries
 
 
@@ -142,26 +137,20 @@ def create_map(similar_entries):
 
 
 # Interface utilisateur Streamlit
-st.title("Recommendation de festivals ")
+st.title("Recherche de festivale")
 
-# Barre de recherche en haut
-query = st.text_input("Entrez une description du festival :")
-max_neighbors = st.slider("Nombre maximum de voisins à rechercher :", 1, 10)
-distance_threshold = st.slider("Seuil de distance maximale :", 0.0, 1.0, 0.3)
+# Utiliser une barre latérale pour la recherche
+with st.sidebar:
+    query = st.text_input("Entrez une description du festival :", "")
 
 if query:
     # Trouver les entrées similaires
     closest_entries = find_closest_entries(
-        query,
-        tfidf_vectorizer,
-        modelNN_t,
-        df,
-        max_neighbors=max_neighbors,
-        distance_threshold=distance_threshold,
+        query, tfidf_vectorizer, modelNN_t, df, n_neighbors=5
     )
 
     # Afficher les résultats
-    st.write("Les festivales similaires :")
+    st.write("Les entrées les plus proches :")
     st.dataframe(closest_entries)
 
     # Afficher la carte avec les positions des festivals similaires
