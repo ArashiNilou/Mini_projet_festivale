@@ -150,7 +150,7 @@ if query:
     )
 
     # Afficher les résultats
-    st.write("Les entrées les plus proches :")
+    st.write("Les festivales similaires :")
     st.dataframe(closest_entries)
 
     # Afficher la carte avec les positions des festivals similaires
