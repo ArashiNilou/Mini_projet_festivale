@@ -114,7 +114,20 @@ def find_closest_entries(query, vectorizer, knn_model, df, n_neighbors=5):
     distances, indices = knn_model.kneighbors(query_tfidf, n_neighbors=n_neighbors)
 
     # Extraire les entrées similaires
-    similar_entries = df.iloc[indices[0]]
+    # Extraire les entrées similaires
+
+    similar_entries = df.loc[
+        indices[0],
+        [
+            "Processed_nom_festival",
+            "Processed_Type",
+            "Processed_Region",
+            "Processed_Ville",
+            "Annee",
+            "Geocode",
+            "Site_internet",
+        ],
+    ]
     return similar_entries
 
 
